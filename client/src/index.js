@@ -9,7 +9,7 @@ import { basicSetup, EditorView } from "codemirror"
 import { autocompletion, closeBrackets } from '@codemirror/autocomplete'
 import { history } from '@codemirror/commands'
 import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighting } from '@codemirror/language'
-import { crosshairCursor, drawSelection, highlightActiveLineGutter, highlightSpecialChars, lineNumbers, rectangularSelection } from '@codemirror/view'
+import { crosshairCursor, drawSelection, highlightSpecialChars, lineNumbers, rectangularSelection } from '@codemirror/view'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorState, Compartment } from '@codemirror/state'
 
@@ -49,6 +49,36 @@ function hideSpinner() {
     spinner.classList.add('hidden');
 }
 
+function debounce(func, delay) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), delay);
+    };
+}
+
+const debouncedDocumentUpdate = debounce((update) => {
+    const newContent = update.state.doc.toString();
+    let dryRunApiPath = "http://localhost:3000/query_dry_run/" + encodeURIComponent(newContent);
+
+    fetchData(dryRunApiPath).then((data) => {
+        let dryRunErrorParagraph = document.getElementById('dryRunError');
+        if (data?.error.hasError) {
+            dryRunErrorParagraph.style.color = "red";
+            dryRunErrorParagraph.innerHTML = data.error.message;
+        } else {
+            dryRunErrorParagraph.style.color = "white";
+            dryRunErrorParagraph.innerHTML = `Success - ${data.statistics.totalBytesProcessed} bytes processed at [ ${new Date()} ]`
+        }
+    });
+}, 500);
+
+const documentUpdatedListener = EditorView.updateListener.of((update) => {
+    if (update.docChanged) {
+        debouncedDocumentUpdate(update);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
 
     const initialText = `
@@ -74,6 +104,8 @@ select 5 as a
         extensions: [
             vim(),
             basicSetup,
+            documentUpdatedListener,
+            //documentUpdatedListner,
             lineNumbers(),
             highlightSpecialChars(),
             history(),
@@ -103,7 +135,6 @@ select 5 as a
         ],
         parent: targetElement,
     })
-
     addThemeDropdown();
     focusEditor();
 

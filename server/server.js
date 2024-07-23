@@ -139,6 +139,14 @@ app.get('/run_query/:query/', async (req, res) => {
     }
 });
 
+app.get('/query_dry_run/:query/', async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const queryToProcess = req.params.query;
+    let rowsOrErr = await queryDryRun(queryToProcess);
+    res.send(rowsOrErr);
+});
+
 app.get('/cancel_job/', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
