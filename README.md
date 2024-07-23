@@ -3,6 +3,9 @@
 
 A web based ide for BigQuery that can be launched from your local setup build with good old javascript
 
+![CleanShot 2024-07-23 at 21 52 51@2x](https://github.com/user-attachments/assets/6a82e907-77a4-4430-8569-86fac9a222b6)
+
+
 Supports
 
 1. vim key bindings
