@@ -214,11 +214,8 @@ async function runQueryInBigQuery(editorContent) {
         clearGutterMarker(errorLine);
     }
     */
-    if (!editorContent) {
-        var editorContent = editor.state.doc.toString();
-    }
-    let text = encodeURIComponent(editorContent);
-    let apiPath = "http://localhost:3000/run_query/" + text;
+    let query = encodeURIComponent(editorContent);
+    let apiPath = "http://localhost:3000/run_query/" + query;
 
     showSpinner();
     let runButton = document.getElementById('runQueryButton');
@@ -272,19 +269,18 @@ async function runQueryInBigQuery(editorContent) {
 }
 
 function getQueryToRun() {
+    const selection = editor.state.selection.main;
+    const selectedText = editor.state.sliceDoc(selection.from, selection.to);
+    console.log(selectedText);
+    if (selectedText !== "") {
+        return selectedText;
+    }
     return editor.state.doc.toString();
-    //return editor.state.sliceDoc(editor.cm.state.vim.lastSelection.anchorMark.cm.cm6.docView.domChanged.newSel.from, editor.cm.state.vim.lastSelection.anchorMark.cm.cm6.docView.domChanged.newSel.to)
-    //let startOfSelection = editor.getCursor(true);
-    //let endOfSelection = editor.getCursor(false);
-    //let isNoSelection = (startOfSelection.line === endOfSelection.line && startOfSelection.ch === endOfSelection.ch);
-    //if (isNoSelection) {
-    //    return editor.getValue();
-    //}
-    //return editor.getRange(startOfSelection, endOfSelection);
 }
 
 document.getElementById('runQueryButton').addEventListener('click', async function() {
-    runQueryInBigQuery();
+    let queryToRun = getQueryToRun();
+    runQueryInBigQuery(queryToRun);
 });
 
 

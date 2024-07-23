@@ -15,7 +15,7 @@ Supports
 TODO:
 
 - [x] Dynamic dry runs when contents of editor are changed or when user triggers dry run ?
-- [ ] Run a selection. Can make it work when selection is done in non-vim mode. ( this was easier in Code Mirror v5 )
+- [x] Run a selection. Can make it work when selection is done in non-vim mode. ( this was easier in Code Mirror v5 )
 - [ ] Mark the line where error is in the editor gutter ( this was easier in Code Mirror v5 )
 - [ ] Resolve weird wasm error ( does not seem to affect the core functionality )
 - [ ] Theme of the editor should match the theme of the table and the page
